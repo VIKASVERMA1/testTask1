@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 
 const register=require("./routes/userServices")
 
-port=3001;
+port=3002;
 
 app.use(express.json());
 app.use(bodyParser.json())

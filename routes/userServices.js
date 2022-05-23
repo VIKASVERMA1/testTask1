@@ -1,8 +1,17 @@
 const express = require("express");
 let router = express.Router();
 const Users = require("../userSchema");
+const access_Token = require("../models/authSchema");
 const bcrypt = require("bcrypt");
-// var md5 = require("md5");
+const jwt = require("jsonwebtoken");
+const md5 = require("md5");
+const auth = require("../middleware/autentication");
+const Address = require("../models/addressSchema");
+// const token=("my name is");
+
+// router.get('/test',auth,function(req,res){
+//   res.status(200).send({success:true,msg:"Authenticated"})
+// })
 
 router.post("/register", async (req, res) => {
   const { firstName, lastName, userName, email_id, password, confirmPassword } =
@@ -43,15 +52,21 @@ router.post("/register", async (req, res) => {
 //login Api
 
 router.post("/login", async (req, res) => {
-  console.log(req);
   const name = req.body.userName;
   const pass = req.body.password;
   try {
     let userdata = await Users.findOne({ userName: name });
     const isMatch = await bcrypt.compare(pass, userdata.password);
     if (isMatch) {
-      const access_token = userdata._id.toString();
-      res.send(access_token);
+      let data = {};
+      const users_id = userdata._id.toString();
+      const auth_token = md5(users_id);
+      data.user_id = users_id;
+      data.access_token = auth_token;
+      let accessModel = new access_Token(data);
+      await accessModel.save();
+
+      res.status(200).json(accessModel);
     } else {
       res.status(500).send("login unsuccessfull");
     }
@@ -63,13 +78,16 @@ router.post("/login", async (req, res) => {
 //get user Information
 
 router.get("/get/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const userInformation = await Users.findById({ _id: id });
-    res.status(200).json(userInformation);
-  } catch (error) {
-    res.status(501).json(error);
-  }
+  const { id } = req.params;
+  var resultArray = {
+    users: [],
+    Addresses: [],
+  };
+  const userInformation = await Users.findById({ _id: id });
+  resultArray.users.push(userInformation);
+  const userAddress = await Address.findOne({ user_id: id });
+  resultArray.Addresses.push(userAddress);
+  res.send({ users: resultArray.users, Address: resultArray.Addresses });
 });
 
 //delete user Information
@@ -106,6 +124,49 @@ router.get("/list/:page", async (req, res) => {
     });
   } catch (error) {
     res.json({ message: error });
+  }
+});
+
+//Api for giving multiple addressess
+
+router.post("/addresses", async (req, res) => {
+  try {
+    const tokens = await access_Token.findOne({
+      access_token: req.body.access_token,
+    });
+    if (tokens) {
+      const data = await Address.findOne({ user_id: req.body.user_id });
+
+      if (data) {
+        var add_address = [];
+        for (let i = 0; i < data.user_addresses.length; i++) {
+          add_address.push(data.user_addresses[i]);
+        }
+        add_address.push(req.body.user_addresses);
+        const updated_Data = await Address.findOneAndUpdate(
+          { user_id: req.body.user_id },
+          { $set: { user_addresses: add_address } },
+          { returnDocument: "after" }
+        );
+        res
+          .status(200)
+          .send({ success: true, msg: "Address details", data: updated_Data });
+      } else {
+        console.log(req.body);
+        const addressess = new Address({
+          user_id: req.body.user_id,
+          user_addresses: req.body.user_addresses,
+        });
+        const address_data = await addressess.save();
+        res
+          .status(200)
+          .send({ success: true, msg: "Address details", data: address_data });
+      }
+    } else {
+      res.status(400).send({ success: false, msg: "Invalid access_token" });
+    }
+  } catch (error) {
+    res.status(400).send({ success: false, msg: error.message });
   }
 });
 
