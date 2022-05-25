@@ -1,0 +1,4 @@
+{
+    "url" :  "mongodb+srv://vikas:vikas123@cluster0.upfxd.mongodb.net/mydbs?retryWrites=true&w=majority",
+    "jwtSecret" : "mySecurityToken" 
+}
