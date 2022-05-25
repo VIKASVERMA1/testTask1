@@ -4,7 +4,7 @@ require("./middleware/auth");
 require("./databaseconnection")
 const bodyParser = require('body-parser')
 const passport = require('passport');
-// require('./passport/passport')
+require('./passport/passport')
 const fileUpload=require("express-fileupload")
 require('./emialTransporter/transporter')
 
@@ -29,9 +29,6 @@ var usersRouter = require("./routes/userRoutes");
 
 
 app.use("/user", usersRouter);
-
-
-
 
 app.listen(port,()=>{
     console.log(`your server is runnig on port ${port}`);

@@ -38,4 +38,4 @@ passport.serializeUser(function(user, done) {
         })
       });
 
-      module.exports=passports
+      module.exports={passports}

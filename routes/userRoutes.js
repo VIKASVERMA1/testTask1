@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router("epxpress");
 const userController = require("../controller/userController");
 const middleware = require("../middleware/auth");
-// const passport = require("../passport/passport");
+const passport = require("../passport/passport");
 const validators = require("../validators/validator");
 
 const passports=require('../passport/passport')
@@ -20,8 +20,8 @@ var storage = multer.diskStorage({
 
 
 router.post("/register",validators.userCreationValidator,userController.userRegister);
-// router.post("/login", passports.authenticate('local'),passport.passportsStatic);
-router.post("/login",validators.userCreationValidator,userController.userLogin);
+router.post("/login", passports.authenticate('local'),passport.passportsStatic);
+// router.post("/login",validators.userCreationValidator,userController.userLogin);
 router.get("/get/:id",userController.userInformation);
 router.delete("/delete", middleware.Auth, userController.deleteUser);
 router.get("/list/:page", userController.userPagination);

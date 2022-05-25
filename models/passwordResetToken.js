@@ -1,7 +1,5 @@
 const mongoose=require("mongoose");
 
-
-
 const resetSchema=mongoose.Schema({
     password_Access_Token:{
         type:String,
