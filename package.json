@@ -1,0 +1,21 @@
+{
+  "name": "fetchingflipkartdata",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cheerio": "^1.0.0-rc.11",
+    "express": "^4.18.1",
+    "fs": "0.0.1-security",
+    "nodemon": "^2.0.16",
+    "puppeteer": "^14.1.1",
+    "request": "^2.88.2"
+  }
+}
