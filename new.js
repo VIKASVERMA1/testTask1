@@ -14,7 +14,7 @@ const { Client } = require("@elastic/elasticsearch");
       }
     });
     await mongoose.connect(
-      "mongodb+srv://ecommerce:ecom123@cluster0.uomwd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+      "mongodb+srv://ecommerce:ecom123@cluster0.uomwd.mongodb.net/local?retryWrites=true&w=majority",
       { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const db = mongoose.connection;
@@ -22,20 +22,19 @@ const { Client } = require("@elastic/elasticsearch");
     db.once("open", function () {
       console.log("Connected successfully");
     });
-    // const data = await db
-    //   .collection("products")
-    //   .find({}, { projection: { createdAt: 0, updatedAt: 0, __v: 0 } })
-    //   .toArray();
-      //educationdatabase_pdffiles-------educationdatabase_video
-      //ex-educationdatabase_staffs
+    //local_oplog.rs
+    const data = await db
+      .collection("clustermanager")
+      .find({}, { projection: { createdAt: 0, updatedAt: 0, __v: 0 } })
+      .toArray();
       // console.log(data);
-    let res = await axios.delete(`http://176.9.137.77:9200/products`, {})
-    // for (let item in data) {
-    //   let res = await axios.post(`http://176.9.137.77:9200/products/_doc/${data[item]._id}`, {
-    //     data: JSON.parse(JSON.stringify(data[item])),
-    //   });
+    // let res = await axios.delete(`http://176.9.137.77:9200/newpurchaseorders/_doc/70bc8f4b72a86921468bf8e8441dce51`, {})
+    for (let item in data) {
+      let res = await axios.post(`http://176.9.137.77:9200/local_clustermanager/_doc/${data[item]._id}`, {
+        data: data[item],
+      });
       console.log(res);
-    // }http://176.9.137.77/
+    }
   } catch (error) {
     console.log(error.response);
   }
